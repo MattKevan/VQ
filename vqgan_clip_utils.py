@@ -17,7 +17,11 @@ import torch.nn.functional as F
 from torch import optim
 from torchvision import transforms
 from torchvision.transforms import functional as TF
-import open_clip
+try:
+    import open_clip
+except ImportError:
+    # Package is installed as open-clip-torch but can be imported as open_clip_torch
+    import open_clip_torch as open_clip
 from omegaconf import OmegaConf
 from PIL import Image
 import numpy as np
