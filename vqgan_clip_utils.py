@@ -6,10 +6,17 @@ Based on rkhamilton architecture with modernized dependencies and techniques.
 import sys
 from pathlib import Path
 
-# Add taming-transformers to path if it's in the project directory
-taming_path = Path(__file__).parent / "taming-transformers"
-if taming_path.exists() and str(taming_path) not in sys.path:
-    sys.path.insert(0, str(taming_path))
+# Add taming-transformers to path - check common locations
+# Priority: /mnt/store (persistent), parent dir (local), relative path
+taming_locations = [
+    Path("/mnt/store/taming-transformers"),  # Persistent notebook storage
+    Path(__file__).parent / "taming-transformers",  # Same directory as this file
+]
+
+for taming_path in taming_locations:
+    if taming_path.exists() and str(taming_path) not in sys.path:
+        sys.path.insert(0, str(taming_path))
+        break  # Use first found location
 
 import torch
 import torch.nn as nn
