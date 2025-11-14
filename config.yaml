@@ -1,0 +1,72 @@
+# VQGAN+CLIP Configuration
+# Default parameters for image generation
+
+# Model paths (relative to project root)
+vqgan:
+  config_path: "models/vqgan_imagenet_f16_16384.yaml"
+  checkpoint_path: "models/vqgan_imagenet_f16_16384.ckpt"
+
+# CLIP model configuration
+clip:
+  model_name: "ViT-B-32"  # Options: ViT-B-32, ViT-B-16, ViT-L-14
+  pretrained: "laion2b_s34b_b79k"  # OpenCLIP pretrained weights
+
+# Image generation settings
+image:
+  width: 512
+  height: 512
+  seed: null  # Set to integer for reproducibility, null for random
+
+# Optimization parameters
+optimization:
+  iterations: 500  # 100-500 for testing, 1000-5000 for quality, 5000-10000 for high quality
+  learning_rate: 0.1  # 0.05-0.1 with init image, 0.1-0.2 from noise
+  weight_decay: 0.01  # For AdamW optimizer
+
+  # Learning rate schedule
+  scheduler:
+    type: "cosine"  # cosine or none
+    eta_min_ratio: 0.01  # End LR = lr * eta_min_ratio
+
+  # Mixed precision
+  use_mixed_precision: true  # Auto-selects dtype based on device
+
+  # Optimizer
+  optimizer: "AdamW"  # AdamW recommended, also supports Adam, RAdam
+
+# Cutout parameters
+cutouts:
+  num_cuts: 32  # 16-32 for fast, 32-64 for balanced, 64-128 for quality
+  cut_power: 1.0  # <1.0 = bigger cutouts, >1.0 = smaller cutouts
+  method: "kornia"  # kornia (recommended) or original
+
+  # Augmentation settings (for kornia method)
+  augmentations:
+    affine_prob: 0.5
+    jitter_prob: 0.5
+    noise_prob: 0.1
+
+# Prompts (can be overridden in notebook)
+prompts:
+  text:
+    - "a beautiful landscape painting"
+  image: []  # List of image paths with optional weights
+  noise: []  # List of "seed:weight" strings
+
+# Initialization
+init:
+  image_path: null  # Path to init image, null for random noise
+  weight: 0.0  # 0.0-1.0, how much to preserve init image
+  noise_type: null  # null, "pixels", or "gradient"
+
+# Output settings
+output:
+  save_every: 50  # Save progress every N iterations, 0 to disable
+  output_dir: "outputs"
+  filename_prefix: "vqgan_clip"
+  format: "png"  # png or jpg
+
+# Device configuration (auto-detected if not specified)
+device:
+  type: "auto"  # auto, cuda, mps, or cpu
+  gpu_id: 0  # For multi-GPU systems

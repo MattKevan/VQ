@@ -1,0 +1,40 @@
+# Modern VQGAN+CLIP Dependencies (2025)
+# Python 3.11-3.12 recommended (3.13 may have compatibility issues)
+
+# Core deep learning
+# Note: Adjust versions based on current PyTorch release
+# As of late 2024, use 2.5.x or latest available
+torch>=2.5.0
+torchvision>=0.20.0
+torchaudio>=2.5.0
+
+# OpenCLIP for modern CLIP models
+open-clip-torch>=2.24.0
+
+# VQGAN dependencies
+pytorch-lightning>=2.0.0
+omegaconf>=2.3.0
+einops>=0.7.0
+
+# Image augmentation
+kornia>=0.7.0
+
+# Image processing
+Pillow>=10.0.0
+imageio>=2.33.0
+imageio-ffmpeg>=0.4.9
+
+# Utilities
+numpy<2.0.0  # Some packages not yet compatible with numpy 2.0
+tqdm>=4.65.0
+pyyaml>=6.0
+matplotlib>=3.7.0  # For notebook visualizations
+requests>=2.31.0  # Required by taming-transformers
+
+# Optional but recommended (install manually if on Linux/Windows with CUDA)
+# triton>=2.9.0  # For torch.compile optimizations (CUDA only, not available on macOS)
+# bitsandbytes>=0.41.0  # For 8-bit optimizers (Linux/Windows only, not macOS)
+
+# For taming-transformers (VQGAN)
+# Install from source as it's not actively maintained:
+# git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
