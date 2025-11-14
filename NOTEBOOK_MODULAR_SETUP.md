@@ -24,14 +24,17 @@ VQ/
 **Cell 1 (Markdown):** Introduction and instructions
 
 **Cell 2 (Setup):** Automatic repository cloning and dependency installation
-- Clones `https://github.com/MattKevan/VQ` to `./vqgan-clip/` subdirectory
-- Deletes existing directory first (always fresh clone)
+- Clones `https://github.com/MattKevan/VQ` to `/mnt/store/vqgan-clip/`
+- Clones `taming-transformers` to `/mnt/store/taming-transformers/`
+- Uses `/mnt/store` so files **persist across kernel restarts**
+- Only clones if directories don't exist (skips if already present)
 - Verifies required files are present
 - Installs dependencies from `requirements.txt`
-- Clones and patches `taming-transformers` for PyTorch 2.x compatibility
+- Patches `taming-transformers` for PyTorch 2.x compatibility
 
-**Cell 3 (Imports):** Load modules from cloned repository
-- Adds `./vqgan-clip/` to Python path
+**Cell 3 (Imports):** Load modules from cloned repositories
+- Adds `/mnt/store/vqgan-clip/` to Python path
+- Adds `/mnt/store/taming-transformers/` to Python path
 - Imports `vqgan_clip_utils` from cloned directory
 - Shows helpful error messages if setup wasn't run
 
@@ -59,12 +62,18 @@ All supporting files are automatically fetched from the repository!
 
 ## Configuration
 
-The repository URL is set at the top of Cell 2:
+The repository URL and directories are set at the top of Cell 2:
 
 ```python
 REPO_URL = "https://github.com/MattKevan/VQ"
-REPO_DIR = "vqgan-clip"
+REPO_DIR = Path("/mnt/store/vqgan-clip")
+TAMING_DIR = Path("/mnt/store/taming-transformers")
 ```
+
+**Why `/mnt/store`?**
+- Files persist across kernel restarts
+- No need to re-clone on every restart
+- Faster subsequent runs (only installs dependencies)
 
 Users don't need to change this - it just works!
 
@@ -85,6 +94,29 @@ No changes needed - contains all dependencies.
 ### config.yaml (optional)
 Can be used if you add config file loading, but currently notebook uses ipywidgets for interactive configuration.
 
+## Persistent Storage with `/mnt/store`
+
+The notebook uses `/mnt/store` as a persistent storage location:
+
+**Benefits:**
+- Files survive kernel restarts
+- No need to re-clone repositories
+- Faster startup on subsequent runs
+- Can edit files directly and changes persist
+
+**File Locations:**
+- `/mnt/store/vqgan-clip/` - Main repository
+- `/mnt/store/taming-transformers/` - VQGAN dependencies
+
+**To force update:**
+```bash
+# Delete directories to trigger fresh clone
+rm -rf /mnt/store/vqgan-clip
+rm -rf /mnt/store/taming-transformers
+```
+
+Then re-run Cell 2.
+
 ## Troubleshooting
 
 **"Repository not found" error:**
@@ -92,14 +124,15 @@ Can be used if you add config file loading, but currently notebook uses ipywidge
 - Ensure repository is public or user has access
 - Verify git is installed
 
-**"Module not found" error:**
+**"Module not found" error (taming-transformers):**
 - Make sure Cell 2 completed successfully
 - Restart kernel after running Cell 2
-- Check that `./vqgan-clip/vqgan_clip_utils.py` exists
+- Check that both `/mnt/store/vqgan-clip/` and `/mnt/store/taming-transformers/` exist
+- Cell 3 adds both directories to Python path
 
-**"Already exists" warning:**
-- Normal - Cell 2 deletes and re-clones on each run
-- Ensures you always have latest code
+**"Already exists" message:**
+- Normal - Cell 2 skips cloning if directories already exist
+- To force fresh clone, delete directories (see above)
 
 ## Development Workflow
 
